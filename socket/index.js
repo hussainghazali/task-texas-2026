@@ -30,7 +30,10 @@ const {
   SC_LOBBY_DISCONNECTED,
   SC_LOBBY_CHAT,
   CS_LOBBY_CHAT,
+  CS_JOIN_ROOM,
+  SC_ROOM_PLAYER_JOINED,
 } = require('../core/actions');
+const roomStore = require('../utils/roomStore');
 const config = require('../config');
 
 const tables = {
@@ -479,6 +482,40 @@ const init = (socket, io) => {
       }
     } catch (error) {
       logger.error('Error in SITTING_IN handler:', error);
+    }
+  });
+
+  // Room event: client subscribes to a room channel and optionally joins it
+  socket.on(CS_JOIN_ROOM, ({ roomId, playerName, playerId }) => {
+    try {
+      if (!roomId) {
+        logger.warn('CS_JOIN_ROOM missing roomId');
+        return;
+      }
+
+      const room = roomStore.findById(roomId);
+      if (!room) {
+        socket.emit('error', { message: 'Room not found' });
+        return;
+      }
+
+      // Subscribe this socket to the room's broadcast channel
+      socket.join(`room:${roomId}`);
+
+      if (playerName) {
+        const player = { id: playerId || socket.id, name: playerName };
+        const updatedRoom = roomStore.addPlayer(roomId, player);
+
+        io.to(`room:${roomId}`).emit(SC_ROOM_PLAYER_JOINED, {
+          roomId,
+          player,
+          room: updatedRoom,
+        });
+
+        logger.info(`[BROADCAST] SC_ROOM_PLAYER_JOINED -> room:${roomId}`, { player, socketId: socket.id });
+      }
+    } catch (error) {
+      logger.error('Error in CS_JOIN_ROOM handler:', error);
     }
   });
 
