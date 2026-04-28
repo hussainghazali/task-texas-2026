@@ -2,3 +2,4 @@
 local.env
 production.env
 package-lock.json
+.env
