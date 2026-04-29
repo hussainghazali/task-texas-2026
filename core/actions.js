@@ -36,6 +36,12 @@ exports.SC_LOBBY_CONNECTED = 'SC_LOBBY_CONNECTED';
 exports.SC_LOBBY_DISCONNECTED = 'SC_LOBBY_DISCONNECTED';
 exports.SC_LOBBY_CHAT = 'SC_LOBBY_CHAT';
 
+// Room Management (Client → Server)
+exports.CS_JOIN_ROOM = 'CS_JOIN_ROOM';
+
+// Room Events (Server → Client)
+exports.SC_ROOM_PLAYER_JOINED = 'SC_ROOM_PLAYER_JOINED';
+
 // Game State Constants
 exports.WINNER = 'WINNER';
 exports.TABLE_MESSAGE = 'TABLE_MESSAGE'; // Internal use only

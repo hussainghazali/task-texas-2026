@@ -41,6 +41,9 @@ const io = socketio(server, {
   },
 });
 
+// Make io accessible to route handlers via req.app.get('io')
+app.set('io', io);
+
 io.on('connection', (socket) => {
   gameSocket.init(socket, io);
 });
